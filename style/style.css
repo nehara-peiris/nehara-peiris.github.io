@@ -109,19 +109,20 @@ button img {
 /* Media Query for Small Screens */
 @media (max-width: 768px) {
     .input, .row {
-        width: 80%;
+        width: 100%;
     }
 
     textarea {
-        height: 120px;
+        height: 50%;
+        width: 80%;
     }
 
     select {
-        width: 65%;
+        width: 80%;
     }
 
     button {
-        width: 30%;
-        font-size: 1rem;
+        width: 80%;
+        font-size: 2rem;
     }
 }
