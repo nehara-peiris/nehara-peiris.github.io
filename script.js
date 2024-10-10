@@ -17,7 +17,7 @@ function loadVoices() {
 // Call `loadVoices()` both on voice change and after a short delay
 window.speechSynthesis.onvoiceschanged = loadVoices;
 
-// For mobile, try calling manually after a small delay
+// For mobile, try calling manually after a short delay
 setTimeout(() => {
     if (voices.length === 0) {
         loadVoices(); // Try loading again in case voices are delayed
@@ -28,7 +28,12 @@ voiceSelect.addEventListener("change", () => {
     speech.voice = voices[voiceSelect.value];
 });
 
-document.querySelector("button").addEventListener("click", () => {
+// Function to trigger speech synthesis
+function handleSpeech() {
     speech.text = document.querySelector("textarea").value;
     window.speechSynthesis.speak(speech);
-});
+}
+
+// Listen for both click and touchstart events
+document.querySelector("button").addEventListener("click", handleSpeech);
+document.querySelector("button").addEventListener("touchstart", handleSpeech);
