@@ -12,20 +12,31 @@ function loadVoices() {
             let option = new Option(voice.name + ' (' + voice.lang + ')', i);
             voiceSelect.options.add(option);
         });
+    } else {
+        console.log('Voices not loaded, retrying...');
     }
 }
 
 window.speechSynthesis.onvoiceschanged = loadVoices;
 
-setTimeout(() => {
-    if (voices.length === 0) {
-        loadVoices(); // Try loading again in case voices are delayed
-    }
-}, 1000);
+// Try loading voices on page load, and retry after user interaction
+document.addEventListener('DOMContentLoaded', () => {
+    loadVoices();
+    // Fallback: try loading voices after a short delay
+    setTimeout(() => {
+        if (voices.length === 0) {
+            loadVoices();
+        }
+    }, 1000);
+});
 
 function handleSpeech() {
     speech.text = document.querySelector("textarea").value;
-    window.speechSynthesis.speak(speech);
+    if (speech.text.trim() !== "") {
+        window.speechSynthesis.speak(speech);
+    } else {
+        console.log('No text provided for speech');
+    }
 }
 
 voiceSelect.addEventListener("change", () => {
@@ -36,4 +47,5 @@ voiceSelect.addEventListener("change", () => {
     }
 });
 
-document.querySelector("button").addEventListener("pointerdown", handleSpeech);
+// Trigger speech on button press with user interaction
+document.querySelector("button").addEventListener("click", handleSpeech);
