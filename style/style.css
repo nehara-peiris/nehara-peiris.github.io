@@ -114,7 +114,7 @@ button img {
     }
 
     textarea {
-        height: 50%;
+        height: 50% !important;
         width: 80%;
     }
 
