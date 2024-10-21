@@ -1,51 +1,51 @@
-let speech = new SpeechSynthesisUtterance();
-let voices = [];
-let voiceSelect = document.querySelector("select");
+document.addEventListener("DOMContentLoaded", () => {
+    const textarea = document.querySelector("textarea");
+    const select = document.querySelector("select");
+    const button = document.querySelector("button");
 
-function loadVoices() {
-    voices = window.speechSynthesis.getVoices();
-    console.log(voices); // Log available voices
-    if (voices.length > 0) {
-        speech.voice = voices[0]; // Default to the first voice
-        voiceSelect.innerHTML = '';
-        voices.forEach((voice, i) => {
-            let option = new Option(voice.name + ' (' + voice.lang + ')', i);
-            voiceSelect.options.add(option);
-        });
-    } else {
-        console.log('Voices not loaded, retrying...');
-    }
-}
+    // Get available voices
+    let voices = [];
 
-window.speechSynthesis.onvoiceschanged = loadVoices;
+    const getVoices = () => {
+        voices = speechSynthesis.getVoices();
 
-// Try loading voices on page load, and retry after user interaction
-document.addEventListener('DOMContentLoaded', () => {
-    loadVoices();
-    // Fallback: try loading voices after a short delay
-    setTimeout(() => {
         if (voices.length === 0) {
-            loadVoices();
+            // Alert or message if no voices are available on mobile
+            alert("No voices are available on this device.");
+            return;
         }
-    }, 1000);
+
+        voices.forEach((voice) => {
+            const option = document.createElement("option");
+            option.value = voice.name;
+            option.textContent = `${voice.name} (${voice.lang})`;
+            select.appendChild(option);
+        });
+    };
+
+    // Populate voices when they are loaded
+    speechSynthesis.onvoiceschanged = getVoices;
+
+    // Text to Speech
+    const textToSpeech = () => {
+        const text = textarea.value;
+
+        if (text.trim() !== "") {
+            const utterance = new SpeechSynthesisUtterance(text);
+
+            // Set selected voice
+            const selectedVoice = voices.find((voice) => voice.name === select.value);
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
+
+            // Speak the text
+            speechSynthesis.speak(utterance);
+        } else {
+            alert("Please enter some text to convert to speech.");
+        }
+    };
+
+    // Add event listener to button
+    button.addEventListener("click", textToSpeech);
 });
-
-function handleSpeech() {
-    speech.text = document.querySelector("textarea").value;
-    if (speech.text.trim() !== "") {
-        window.speechSynthesis.speak(speech);
-    } else {
-        console.log('No text provided for speech');
-    }
-}
-
-voiceSelect.addEventListener("change", () => {
-    const selectedIndex = voiceSelect.value; // Get selected index
-    if (voices[selectedIndex]) { // Ensure the voice exists
-        speech.voice = voices[selectedIndex]; // Update the selected voice
-        console.log(`Selected voice: ${speech.voice.name}`); // Log selected voice
-    }
-});
-
-// Trigger speech on button press with user interaction
-document.querySelector("button").addEventListener("click", handleSpeech);
